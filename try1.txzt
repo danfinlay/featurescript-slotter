@@ -7,52 +7,31 @@ export const slot = defineFeature(function(context is Context, id is Id, definit
     {
         // Define the parameters of the feature type
         
-        // INLET
-        annotation { "Name" : "Inlets", "Item name" : "Inlet",
-                "Driven query" : "entities", "Item label template" : "#inlets" }
-        definition.inlets is array;
-        for (var inlet in definition.inlets)
-        {
-            annotation { "Name" : "Entities", "Filter" : EntityType.BODY, "MaxNumberOfPicks" : 1 }
-            inlet.entities is Query;
-            // More nested parameters defined here, as e.g. widget.myParameter
-        }
+        annotation { "Name" : "Inlet", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
+        definition.inlet is Query;
         
-        // OUTLET
-        annotation { "Name" : "Outlets", "Item name" : "Outlet",
-        "Driven query" : "entities", "Item label template" : "#outlets" }
-        definition.outlets is array;
-        for (var outlet in definition.outlets)
-        {
-            annotation { "Name" : "Outlets", "Filter" : EntityType.BODY, "MaxNumberOfPicks" : 1 }
-            outlet.entities is Query;
-            // More nested parameters defined here, as e.g. widget.myParameter
-        }
+        annotation { "Name" : "Outlet", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
+        definition.outlet is Query;
         
-        // SEAM
-        annotation { "Name" : "Seams", "Item name" : "Seam", "Item label template" : "#seams" }
-        definition.seams is array;
-        for (var seam in definition.seams)
-        {
-            annotation { "Name" : "Seams", "Filter" : EntityType.BODY, "MaxNumberOfPicks" : 1 }
-            seam.entities is Query;
-            // Nested parameters defined here, as e.g. widget.myParameter
-        }
+        annotation { "Name" : "seam", "Filter" : EntityType.BODY && BodyType.SOLID, "MaxNumberOfPicks" : 1 }
+        definition.seam is Query;
+        
     }
     {
         // Define the function's action
         
         // Adding the seam to the outlet
         opBoolean(context, id + "union", {
-            "tools" : definition.seams,
-            "targets" : definition.outlets,
+            "tools" : definition.seam,
+            "targets" : definition.outlet,
             "operationType" : BooleanOperationType.UNION
         });
         
         // Subtracting the seam from the inlet
         opBoolean(context, id + "subtract", {
-            "tools" : definition.seams,
-            "targets" : definition.inlets,
+            "tools" : definition.seam,
+            "targets" : definition.inlet,
             "operationType" : BooleanOperationType.SUBTRACTION
         });
     });
+
