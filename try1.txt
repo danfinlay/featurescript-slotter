@@ -19,11 +19,14 @@ export const slot = defineFeature(function(context is Context, id is Id, definit
     }
     {
         // Define the function's action
+
         
         // Adding the seam to the outlet
         opBoolean(context, id + "union", {
-            "tools" : definition.seam,
-            "targets" : definition.outlet,
+            "tools" : qUnion([
+                definition.seam,
+                definition.outlet
+            ]),
             "operationType" : BooleanOperationType.UNION
         });
         
@@ -31,7 +34,7 @@ export const slot = defineFeature(function(context is Context, id is Id, definit
         opBoolean(context, id + "subtract", {
             "tools" : definition.seam,
             "targets" : definition.inlet,
+            "keepTools": true,
             "operationType" : BooleanOperationType.SUBTRACTION
         });
     });
-
