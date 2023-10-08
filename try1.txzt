@@ -1,0 +1,58 @@
+FeatureScript 2144;
+import(path : "onshape/std/common.fs", version : "2144.0");
+
+annotation { "Feature Type Name" : "slot-cut" }
+export const slot = defineFeature(function(context is Context, id is Id, definition is map)
+    precondition
+    {
+        // Define the parameters of the feature type
+        
+        // INLET
+        annotation { "Name" : "Inlets", "Item name" : "Inlet",
+                "Driven query" : "entities", "Item label template" : "#inlets" }
+        definition.inlets is array;
+        for (var inlet in definition.inlets)
+        {
+            annotation { "Name" : "Entities", "Filter" : EntityType.BODY, "MaxNumberOfPicks" : 1 }
+            inlet.entities is Query;
+            // More nested parameters defined here, as e.g. widget.myParameter
+        }
+        
+        // OUTLET
+        annotation { "Name" : "Outlets", "Item name" : "Outlet",
+        "Driven query" : "entities", "Item label template" : "#outlets" }
+        definition.outlets is array;
+        for (var outlet in definition.outlets)
+        {
+            annotation { "Name" : "Outlets", "Filter" : EntityType.BODY, "MaxNumberOfPicks" : 1 }
+            outlet.entities is Query;
+            // More nested parameters defined here, as e.g. widget.myParameter
+        }
+        
+        // SEAM
+        annotation { "Name" : "Seams", "Item name" : "Seam", "Item label template" : "#seams" }
+        definition.seams is array;
+        for (var seam in definition.seams)
+        {
+            annotation { "Name" : "Seams", "Filter" : EntityType.BODY, "MaxNumberOfPicks" : 1 }
+            seam.entities is Query;
+            // Nested parameters defined here, as e.g. widget.myParameter
+        }
+    }
+    {
+        // Define the function's action
+        
+        // Adding the seam to the outlet
+        opBoolean(context, id + "union", {
+            "tools" : definition.seams,
+            "targets" : definition.outlets,
+            "operationType" : BooleanOperationType.UNION
+        });
+        
+        // Subtracting the seam from the inlet
+        opBoolean(context, id + "subtract", {
+            "tools" : definition.seams,
+            "targets" : definition.inlets,
+            "operationType" : BooleanOperationType.SUBTRACTION
+        });
+    });
